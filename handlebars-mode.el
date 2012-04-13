@@ -1,10 +1,11 @@
-;;; mustache-mode.el --- A major mode for editing Mustache files.
+;;; handlebars-mode.el --- A major mode for editing Handlebars files.
 
 ;; Author: Tony Gentilcore
 ;;       Chris Wanstrath
 ;;       Daniel Hackney
-
-;; Version: 1.2
+;;       Daniel Evans
+;;
+;; Version: 1.3
 
 ;; This file is not part of Emacs
 
@@ -30,12 +31,7 @@
 ;;
 ;; 2) Add the following to your .emacs file:
 ;;
-;;    (require 'mustache-mode)
-
-;; While the Mustache language can be used for any types of text,
-;; this mode is intended for using Mustache to write HTML.
-
-;;; Known Bugs:
+;;    (require 'handlebars-mode)
 
 ;; The indentation still has minor bugs due to the fact that
 ;; templates do not require valid HTML.
@@ -47,19 +43,20 @@
 (eval-when-compile
   (require 'font-lock))
 
-(defvar mustache-mode-version "1.2"
-  "Version of `mustache-mode.el'.")
+(defvar handlebars-mode-version "1.3"
+  "Version of `handlebars-mode.el'.")
 
-(defvar mustache-mode-map
+;; TODO: this keystrokes should be altered to avoid conflict with mustache-mode
+(defvar handlebars-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map "\C-m" 'reindent-then-newline-and-indent)
-    (define-key map "\C-ct" 'mustache-insert-tag)
-    (define-key map "\C-cv" 'mustache-insert-variable)
-    (define-key map "\C-cs" 'mustache-insert-section)
+    (define-key map "\C-ct" 'handlebars-insert-tag)
+    (define-key map "\C-cv" 'handlebars-insert-variable)
+    (define-key map "\C-cs" 'handlebars-insert-section)
     map)
-  "Keymap for mustache-mode major mode")
+  "Keymap for handlebars-mode major mode")
 
-(defvar mustache-mode-syntax-table
+(defvar handlebars-mode-syntax-table
   (let ((st (make-syntax-table)))
     (modify-syntax-entry ?<  "(>  " st)
     (modify-syntax-entry ?>  ")<  " st)
@@ -67,48 +64,48 @@
     (modify-syntax-entry ?\\ ".   " st)
     (modify-syntax-entry ?'  "w   " st)
     st)
-  "Syntax table in use in mustache-mode buffers.")
+  "Syntax table in use in handlebars-mode buffers.")
 
-(defvar mustache-basic-offset 2
+(defvar handlebars-basic-offset 2
   "The basic indentation offset.")
 
 ;; Constant regular expressions to identify template elements.
-(defconst mustache-mode-mustache-token "\\([a-zA-Z_.][a-zA-Z0-9_:=\?!.-]*\s+\\)*[a-zA-Z_.][a-zA-Z0-9_:=\?!.-]*")
-(defconst mustache-mode-section (concat "\\({{[#^/]\s*"
-                                   mustache-mode-mustache-token
+(defconst handlebars-mode-handlebars-token "\\([a-zA-Z_.][a-zA-Z0-9_:=\?!.-]*\s+\\)*[a-zA-Z_.][a-zA-Z0-9_:=\?!.-]*")
+(defconst handlebars-mode-section (concat "\\({{[#^/]\s*"
+                                   handlebars-mode-handlebars-token
                                    "\s*}}\\)"))
-(defconst mustache-mode-open-section (concat "\\({{#\s*"
-                                        mustache-mode-mustache-token
+(defconst handlebars-mode-open-section (concat "\\({{#\s*"
+                                        handlebars-mode-handlebars-token
                                         "\s*}}\\)"))
-(defconst mustache-mode-close-section (concat "{{/\\(\s*"
-                                         mustache-mode-mustache-token
+(defconst handlebars-mode-close-section (concat "{{/\\(\s*"
+                                         handlebars-mode-handlebars-token
                                          "\s*\\)}}"))
 ;; TODO(tonyg) Figure out a way to support multiline comments.
-(defconst mustache-mode-comment "\\({{!.*?}}\\)")
-(defconst mustache-mode-include (concat "\\({{[><]\s*"
-                                   mustache-mode-mustache-token
+(defconst handlebars-mode-comment "\\({{!.*?}}\\)")
+(defconst handlebars-mode-include (concat "\\({{[><]\s*"
+                                   handlebars-mode-handlebars-token
                                    "\s*}}\\)"))
-(defconst mustache-mode-variable (concat "\\({{\s*"
-                                    mustache-mode-mustache-token
+(defconst handlebars-mode-variable (concat "\\({{\s*"
+                                    handlebars-mode-handlebars-token
                                     "\s*}}\\)"))
-(defconst mustache-mode-variable (concat "\\({{{?\s*"
-                                    mustache-mode-mustache-token
+(defconst handlebars-mode-variable (concat "\\({{{?\s*"
+                                    handlebars-mode-handlebars-token
                                     "\s*}}}?\\)"))
-(defconst mustache-mode-builtins
+(defconst handlebars-mode-builtins
   (concat
    "\\({{\\<\s*"
    (regexp-opt
     '("BI_NEWLINE" "BI_SPACE")
     t)
    "\s*\\>}}\\)"))
-(defconst mustache-mode-close-section-at-start (concat "^[ \t]*?"
-                                                  mustache-mode-close-section))
+(defconst handlebars-mode-close-section-at-start (concat "^[ \t]*?"
+                                                  handlebars-mode-close-section))
 
 ;; Constant regular expressions to identify html tags.
 ;; Taken from HTML 4.01 / XHTML 1.0 Reference found at:
 ;; http://www.w3schools.com/tags/default.asp.
-(defconst mustache-mode-html-constant "\\(&#?[a-z0-9]\\{2,5\\};\\)")
-(defconst mustache-mode-pair-tag
+(defconst handlebars-mode-html-constant "\\(&#?[a-z0-9]\\{2,5\\};\\)")
+(defconst handlebars-mode-pair-tag
   (concat
    "\\<"
    (regexp-opt
@@ -125,57 +122,57 @@
       "tfoot" "th" "thead" "title" "tr" "tt" "u" "ul" "var")
     t)
    "\\>"))
-(defconst mustache-mode-standalone-tag
+(defconst handlebars-mode-standalone-tag
   (concat
    "\\<"
    (regexp-opt
     '("base" "br" "hr" "img" "input" "meta" "param")
     t)
    "\\>"))
-(defconst mustache-mode-open-tag (concat "<\\("
-                                    mustache-mode-pair-tag
+(defconst handlebars-mode-open-tag (concat "<\\("
+                                    handlebars-mode-pair-tag
                                     "\\)"))
-(defconst mustache-mode-close-tag (concat "</\\("
-                                     mustache-mode-pair-tag
+(defconst handlebars-mode-close-tag (concat "</\\("
+                                     handlebars-mode-pair-tag
                                      "\\)>"))
-(defconst mustache-mode-close-tag-at-start (concat "^[ \t]*?"
-                                              mustache-mode-close-tag))
+(defconst handlebars-mode-close-tag-at-start (concat "^[ \t]*?"
+                                              handlebars-mode-close-tag))
 
-(defconst mustache-mode-blank-line "^[ \t]*?$")
-(defconst mustache-mode-dangling-open (concat "\\("
-                                         mustache-mode-open-section
+(defconst handlebars-mode-blank-line "^[ \t]*?$")
+(defconst handlebars-mode-dangling-open (concat "\\("
+                                         handlebars-mode-open-section
                                          "\\)\\|\\("
-                                         mustache-mode-open-tag
+                                         handlebars-mode-open-tag
                                          "\\)[^/]*$"))
 
-(defun mustache-insert-tag (tag)
+(defun handlebars-insert-tag (tag)
   "Inserts an HTML tag."
   (interactive "sTag: ")
-  (mustache-indent)
+  (handlebars-indent)
   (insert (concat "<" tag ">"))
   (insert "\n\n")
   (insert (concat "</" tag ">"))
-  (mustache-indent)
+  (handlebars-indent)
   (forward-line -1)
-  (mustache-indent))
+  (handlebars-indent))
 
-(defun mustache-insert-variable (variable)
+(defun handlebars-insert-variable (variable)
   "Inserts a tpl variable."
   (interactive "sVariable: ")
   (insert (concat "{{" variable "}}")))
 
-(defun mustache-insert-section (section)
+(defun handlebars-insert-section (section)
   "Inserts a tpl section."
   (interactive "sSection: ")
-  (mustache-indent)
+  (handlebars-indent)
   (insert (concat "{{#" section "}}\n"))
   (insert "\n")
   (insert (concat "{{/" section "}}"))
-  (mustache-indent)
+  (handlebars-indent)
   (forward-line -1)
-  (mustache-indent))
+  (handlebars-indent))
 
-(defun mustache-indent ()
+(defun handlebars-indent ()
   "Indent current line"
   ;; Set the point to beginning of line.
   (beginning-of-line)
@@ -187,9 +184,9 @@
       (progn
         ;; Determine if this is a template line or an html line.
         (if (looking-at "^[ \t]*?{{")
-            (setq close-at-start mustache-mode-close-section-at-start
+            (setq close-at-start handlebars-mode-close-section-at-start
                   open-token "{{#")
-          (setq close-at-start mustache-mode-close-tag-at-start
+          (setq close-at-start handlebars-mode-close-tag-at-start
                 open-token "<"))
         ;; If there is a closing tag at the start of the line, search back
         ;; for its opener and indent to that level.
@@ -220,34 +217,34 @@
             ;; Keep moving back until we find a line that is not blank
             (while (progn
                      (forward-line -1)
-                     (and (not (bobp)) (looking-at mustache-mode-blank-line))))
+                     (and (not (bobp)) (looking-at handlebars-mode-blank-line))))
             (setq cur-indent (current-indentation))
-            (if (re-search-forward mustache-mode-dangling-open old-pnt t)
-                (setq cur-indent (+ cur-indent mustache-basic-offset)))))
+            (if (re-search-forward handlebars-mode-dangling-open old-pnt t)
+                (setq cur-indent (+ cur-indent handlebars-basic-offset)))))
         ;; Finally, we execute the actual indentation.
         (if (> cur-indent 0)
             (indent-line-to cur-indent)
           (indent-line-to 0))))))
 
-(defconst mustache-mode-font-lock-keywords
-  `((,mustache-mode-section (1 font-lock-keyword-face))
-    (,mustache-mode-comment (1 font-lock-comment-face))
-    (,mustache-mode-include (1 font-lock-function-name-face))
-    (,mustache-mode-builtins (1 font-lock-variable-name-face))
-    (,mustache-mode-variable (1 font-lock-reference-face))
-    (,(concat "</?\\(" mustache-mode-pair-tag "\\)") (1 font-lock-function-name-face))
-    (,(concat "<\\(" mustache-mode-standalone-tag "\\)") (1 font-lock-function-name-face))
-    (,mustache-mode-html-constant (1 font-lock-variable-name-face))))
+(defconst handlebars-mode-font-lock-keywords
+  `((,handlebars-mode-section (1 font-lock-keyword-face))
+    (,handlebars-mode-comment (1 font-lock-comment-face))
+    (,handlebars-mode-include (1 font-lock-function-name-face))
+    (,handlebars-mode-builtins (1 font-lock-variable-name-face))
+    (,handlebars-mode-variable (1 font-lock-reference-face))
+    (,(concat "</?\\(" handlebars-mode-pair-tag "\\)") (1 font-lock-function-name-face))
+    (,(concat "<\\(" handlebars-mode-standalone-tag "\\)") (1 font-lock-function-name-face))
+    (,handlebars-mode-html-constant (1 font-lock-variable-name-face))))
 
 ;;;###autoload
-(define-derived-mode mustache-mode fundamental-mode "Mustache"
-  (set (make-local-variable 'indent-line-function) 'mustache-indent)
+(define-derived-mode handlebars-mode fundamental-mode "Handlebars"
+  (set (make-local-variable 'indent-line-function) 'handlebars-indent)
   (set (make-local-variable 'indent-tabs-mode) nil)
-  (set (make-local-variable 'font-lock-defaults) '(mustache-mode-font-lock-keywords)))
+  (set (make-local-variable 'font-lock-defaults) '(handlebars-mode-font-lock-keywords)))
 
-(add-to-list 'auto-mode-alist '("\\.mustache$" . mustache-mode))
-(add-to-list 'auto-mode-alist '("\\.hbs$" . mustache-mode))
+(add-to-list 'auto-mode-alist '("\\.handlebars$" . handlebars-mode))
+(add-to-list 'auto-mode-alist '("\\.hbs$" . handlebars-mode))
 
-(provide 'mustache-mode)
+(provide 'handlebars-mode)
 
-;;; mustache-mode.el ends here
+;;; handlebars-mode.el ends here
