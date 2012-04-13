@@ -1,4 +1,4 @@
-# Emacs Major Mode for Mustache
+# Emacs Major Mode for Handlebars
 
 Based on (mustache-mode)[https://github.com/mustache/emacs]
 
