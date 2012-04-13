@@ -1,6 +1,6 @@
 # Emacs Major Mode for Handlebars
 
-Based on (mustache-mode)[https://github.com/mustache/emacs]
+Based on mustache-mode https://github.com/mustache/emacs
 
 ## Installing
 
