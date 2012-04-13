@@ -73,7 +73,7 @@
   "The basic indentation offset.")
 
 ;; Constant regular expressions to identify template elements.
-(defconst mustache-mode-mustache-token "[a-zA-Z_.][a-zA-Z0-9_:=\?!.-]*?")
+(defconst mustache-mode-mustache-token "\\([a-zA-Z_.][a-zA-Z0-9_:=\?!.-]*\s+\\)*[a-zA-Z_.][a-zA-Z0-9_:=\?!.-]*")
 (defconst mustache-mode-section (concat "\\({{[#^/]\s*"
                                    mustache-mode-mustache-token
                                    "\s*}}\\)"))
