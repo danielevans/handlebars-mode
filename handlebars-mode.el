@@ -198,7 +198,7 @@
                 ;; the tag-stack is 0.
                 (while (and (not (bobp))
                             (> tag-stack 0)
-                            (re-search-backward (concat open-token
+                            (re-search-backward (concat (replace-regexp-in-string "{{#" "{{#?" open-token)
                                                         "\\(/?\\)"
                                                         close-tag) nil t))
                   (if (string-equal (match-string 1) "/")
