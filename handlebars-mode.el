@@ -5,7 +5,7 @@
 ;;       Daniel Hackney
 ;;       Daniel Evans
 ;;
-;; Version: 1.3
+;; Version: 1.4
 
 ;; This file is not part of Emacs
 
