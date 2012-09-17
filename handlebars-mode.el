@@ -139,6 +139,7 @@
                                               handlebars-mode-close-tag))
 
 (defconst handlebars-mode-blank-line "^[ \t]*?$")
+(defconst handlebars-mode-else-line "^[ \t]*?{{[ \t]*?else[ \t]*?}}")
 (defconst handlebars-mode-dangling-open (concat "\\("
                                          handlebars-mode-open-section
                                          "\\)\\|\\("
@@ -188,6 +189,7 @@
                   open-token "{{#")
           (setq close-at-start handlebars-mode-close-tag-at-start
                 open-token "<"))
+
         ;; If there is a closing tag at the start of the line, search back
         ;; for its opener and indent to that level.
         (if (looking-at close-at-start)
@@ -219,8 +221,13 @@
                      (forward-line -1)
                      (and (not (bobp)) (looking-at handlebars-mode-blank-line))))
             (setq cur-indent (current-indentation))
-            (if (re-search-forward handlebars-mode-dangling-open old-pnt t)
+            (if (or (re-search-forward handlebars-mode-dangling-open old-pnt t) (looking-at handlebars-mode-else-line))
                 (setq cur-indent (+ cur-indent handlebars-basic-offset)))))
+
+        ;; Reduce the indentation by one level if it is an else tag.
+        (if (looking-at handlebars-mode-else-line)
+            (setq cur-indent (- cur-indent handlebars-basic-offset)))
+
         ;; Finally, we execute the actual indentation.
         (if (> cur-indent 0)
             (indent-line-to cur-indent)
