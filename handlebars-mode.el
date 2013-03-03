@@ -43,6 +43,38 @@
 (eval-when-compile
   (require 'font-lock))
 
+
+(defgroup handlebars nil
+  ""
+  :group 'languages)
+
+(defface handlebars-mode-section-face
+  '((t (:inherit font-lock-keyword-face)))
+  ""
+  :group 'handlebars)
+
+(defface handlebars-mode-comment-face
+  '((t (:inherit font-lock-comment-face)))
+  ""
+  :group 'handlebars)
+
+(defface handlebars-mode-include-face
+  '((t (:inherit font-lock-function-name-face)))
+  ""
+  :group 'handlebars)
+
+(defface handlebars-mode-builtins-face
+  '((t (:inherit font-lock-variable-name-face)))
+  ""
+  :group 'handlebars)
+
+(defface handlebars-mode-variable-face
+  '((t (:inherit font-lock-reference-face)))
+  ""
+  :group 'handlebars)
+
+
+
 (defvar handlebars-mode-version "1.3"
   "Version of `handlebars-mode.el'.")
 
@@ -234,11 +266,11 @@
           (indent-line-to 0))))))
 
 (defconst handlebars-mode-font-lock-keywords
-  `((,handlebars-mode-section (1 font-lock-keyword-face))
-    (,handlebars-mode-comment (1 font-lock-comment-face))
-    (,handlebars-mode-include (1 font-lock-function-name-face))
-    (,handlebars-mode-builtins (1 font-lock-variable-name-face))
-    (,handlebars-mode-variable (1 font-lock-reference-face))
+  `((,handlebars-mode-section (1 'handlebars-mode-section-face))
+    (,handlebars-mode-comment (1 'handlebars-mode-comment-face))
+    (,handlebars-mode-include (1 'handlebars-mode-include-face))
+    (,handlebars-mode-builtins (1 'handlebars-mode-builtins-face))
+    (,handlebars-mode-variable (1 'handlebars-mode-variable-face))
     (,(concat "</?\\(" handlebars-mode-pair-tag "\\)") (1 font-lock-function-name-face))
     (,(concat "<\\(" handlebars-mode-standalone-tag "\\)") (1 font-lock-function-name-face))
     (,handlebars-mode-html-constant (1 font-lock-variable-name-face))))
