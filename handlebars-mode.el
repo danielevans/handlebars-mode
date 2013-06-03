@@ -69,7 +69,7 @@
   :group 'handlebars)
 
 (defface handlebars-mode-variable-face
-  '((t (:inherit font-lock-reference-face)))
+  '((t (:inherit font-lock-constant-face)))
   ""
   :group 'handlebars)
 
@@ -123,6 +123,12 @@
 (defconst handlebars-mode-variable (concat "\\({{{?\s*"
                                     handlebars-mode-handlebars-token
                                     "\s*}}}?\\)"))
+(defconst handlebars-mode-variable-path (concat "\\({{\s*./\s*"
+                                    handlebars-mode-handlebars-token
+                                    "\s*}}\\)"))
+(defconst handlebars-mode-variable-path-parent (concat "\\({{\s*../\s*"
+                                    handlebars-mode-handlebars-token
+                                    "\s*}}\\)"))
 (defconst handlebars-mode-builtins
   (concat
    "\\({{\\<\s*"
@@ -270,7 +276,9 @@
     (,handlebars-mode-comment (1 'handlebars-mode-comment-face))
     (,handlebars-mode-include (1 'handlebars-mode-include-face))
     (,handlebars-mode-builtins (1 'handlebars-mode-builtins-face))
-    (,handlebars-mode-variable (1 'handlebars-mode-variable-face))
+    (,handlebars-mode-variable (1 font-lock-constant-face))
+    (,handlebars-mode-variable-path (1 font-lock-constant-face))
+    (,handlebars-mode-variable-path-parent (1 font-lock-constant-face))
     (,(concat "</?\\(" handlebars-mode-pair-tag "\\)") (1 font-lock-function-name-face))
     (,(concat "<\\(" handlebars-mode-standalone-tag "\\)") (1 font-lock-function-name-face))
     (,handlebars-mode-html-constant (1 font-lock-variable-name-face))))
