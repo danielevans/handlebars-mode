@@ -69,7 +69,7 @@
   :group 'handlebars)
 
 (defface handlebars-mode-variable-face
-  '((t (:inherit font-lock-reference-face)))
+  '((t (:inherit font-lock-constant-face)))
   ""
   :group 'handlebars)
 
