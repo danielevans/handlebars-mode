@@ -123,10 +123,10 @@
 (defconst handlebars-mode-variable (concat "\\({{{?\s*"
                                     handlebars-mode-handlebars-token
                                     "\s*}}}?\\)"))
-(defconst handlebars-mode-variable-path (concat "\\({{./\s*"
+(defconst handlebars-mode-variable-path (concat "\\({{\s*./\s*"
                                     handlebars-mode-handlebars-token
                                     "\s*}}\\)"))
-(defconst handlebars-mode-variable-path-parent (concat "\\({{../\s*"
+(defconst handlebars-mode-variable-path-parent (concat "\\({{\s*../\s*"
                                     handlebars-mode-handlebars-token
                                     "\s*}}\\)"))
 (defconst handlebars-mode-builtins
