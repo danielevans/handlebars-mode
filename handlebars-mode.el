@@ -123,6 +123,7 @@
 (defconst handlebars-mode-variable (concat "\\({{{?\s*"
                                     handlebars-mode-handlebars-token
                                     "\s*}}}?\\)"))
+(defconst handlebars-mode-else (concat "\\({{\s*else\s*}}\\)"))
 (defconst handlebars-mode-variable-path (concat "\\({{\s*./\s*"
                                     handlebars-mode-handlebars-token
                                     "\s*}}\\)"))
@@ -273,6 +274,7 @@
 
 (defconst handlebars-mode-font-lock-keywords
   `((,handlebars-mode-section (1 'handlebars-mode-section-face))
+    (,handlebars-mode-else (1 'handlebars-mode-section-face))
     (,handlebars-mode-comment (1 'handlebars-mode-comment-face))
     (,handlebars-mode-include (1 'handlebars-mode-include-face))
     (,handlebars-mode-builtins (1 'handlebars-mode-builtins-face))
