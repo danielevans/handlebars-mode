@@ -291,7 +291,9 @@
   (set (make-local-variable 'indent-tabs-mode) nil)
   (set (make-local-variable 'font-lock-defaults) '(handlebars-mode-font-lock-keywords)))
 
+;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.handlebars$" . handlebars-mode))
+;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.hbs$" . handlebars-mode))
 
 (provide 'handlebars-mode)
