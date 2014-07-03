@@ -289,6 +289,8 @@
 (define-derived-mode handlebars-mode fundamental-mode "Handlebars"
   (set (make-local-variable 'indent-line-function) 'handlebars-indent)
   (set (make-local-variable 'indent-tabs-mode) nil)
+  (set (make-local-variable 'comment-start) "{{!")
+  (set (make-local-variable 'comment-end) "}}")
   (set (make-local-variable 'font-lock-defaults) '(handlebars-mode-font-lock-keywords)))
 
 ;;;###autoload
