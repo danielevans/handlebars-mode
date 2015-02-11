@@ -98,8 +98,10 @@
     st)
   "Syntax table in use in handlebars-mode buffers.")
 
-(defvar handlebars-basic-offset 2
-  "The basic indentation offset.")
+(defcustom handlebars-basic-offset 2
+  "The basic indentation offset for handlebars."
+  :group 'handlebars
+  :type 'integer)
 
 ;; Constant regular expressions to identify template elements.
 (defconst handlebars-mode-handlebars-token "\\([a-zA-Z_.][a-zA-Z0-9_:=\?!.-]*\s+\\)*[a-zA-Z_.][a-zA-Z0-9_:=\?!.-]*")
