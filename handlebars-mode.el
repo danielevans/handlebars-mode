@@ -107,10 +107,10 @@
 (defconst handlebars-mode-handlebars-token "\\([a-zA-Z_.][a-zA-Z0-9_:=\?!.-]*\s+\\)*[a-zA-Z_.][a-zA-Z0-9_:=\?!.-]*")
 (defconst handlebars-mode-section (concat "\\({{[#^/]\s*"
                                    handlebars-mode-handlebars-token
-                                   "\s*}}\\)"))
+                                   "[^}]*}}\\)"))
 (defconst handlebars-mode-open-section (concat "\\({{#\s*"
                                         handlebars-mode-handlebars-token
-                                        "\s*}}\\)"))
+                                        "[^}]*}}\\)"))
 (defconst handlebars-mode-close-section (concat "{{/\\(\s*"
                                          handlebars-mode-handlebars-token
                                          "\s*\\)}}"))
@@ -125,7 +125,7 @@
 (defconst handlebars-mode-variable (concat "\\({{{?\s*"
                                     handlebars-mode-handlebars-token
                                     "\s*}}}?\\)"))
-(defconst handlebars-mode-else (concat "\\({{\s*else\s*}}\\)"))
+(defconst handlebars-mode-else (concat "\\({{\s*else[^}]*}}\\)"))
 (defconst handlebars-mode-variable-path (concat "\\({{\s*./\s*"
                                     handlebars-mode-handlebars-token
                                     "\s*}}\\)"))
@@ -180,7 +180,7 @@
                                               handlebars-mode-close-tag))
 
 (defconst handlebars-mode-blank-line "^[ \t]*?$")
-(defconst handlebars-mode-else-line "^[ \t]*?{{[ \t]*?else[ \t]*?}}")
+(defconst handlebars-mode-else-line "^[ \t]*?{{[ \t]*?else[^}]*?}}")
 (defconst handlebars-mode-dangling-open (concat "\\("
                                          handlebars-mode-open-section
                                          "\\)\\|\\("
